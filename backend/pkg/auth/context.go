@@ -7,11 +7,23 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetUserIDFromContext safely extracts the user ID from context
+type contextKey string
+
+const (
+	userIDKey contextKey = "userID"
+)
+
+// GetUserIDFromContext safely extracts user ID from request context
 func GetUserIDFromContext(ctx context.Context) (uuid.UUID, error) {
-	claims := GetUserFromContext(ctx)
-	if claims == nil || claims.UserID == uuid.Nil {
-		return uuid.Nil, fmt.Errorf("user not authenticated")
+	val := ctx.Value(userIDKey)
+	if val == nil {
+		return uuid.Nil, fmt.Errorf("no user ID in context")
 	}
-	return claims.UserID, nil
+
+	userID, ok := val.(uuid.UUID)
+	if !ok {
+		return uuid.Nil, fmt.Errorf("invalid user ID type in context")
+	}
+
+	return userID, nil
 }

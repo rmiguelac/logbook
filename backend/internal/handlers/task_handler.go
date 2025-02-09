@@ -43,7 +43,7 @@ func (h *TaskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		Title:       req.Title,
 		Description: req.Description,
 		Status:      req.Status,
-		UserID:      getUserIDFromContext(r.Context()), // From auth middleware
+		UserID:      userID,
 	}
 
 	if err := h.repo.Create(r.Context(), task); err != nil {
